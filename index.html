@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    li{
+        list-style-type:none ;
+    }
+      .city{
+        display: block;
+   
+        margin-left: 8px;
+        text-indent: 5px;
+}
+.listContainer{
+    display: flex;
+    border-bottom: 1px solid gray ;
+    justify-content: space-between;
+}
+.listContainer:hover {
+    background:#999 ;
+
+}
+.listContainer:hover .actionDialogContainer{
+    background:#999 ;
+    display: flex;
+
+}
+.outerListContainer{
+    width: 400px;
+}
+
+.actionDialogContainer{
+    display: none;
+    align-items: center;
+    width: 35%;
+    justify-content: space-around   ;
+    
+}
+.dialogActionBtn  button{
+
+    width: 70px;
+    text-align: center;
+    position: relative;
+}
+.bodyContainer{
+    width: 50%;
+    margin: auto;
+   
+
+}
+form{
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+</style>
+<body>
+    <!-- manual created dialog -->
+   
+        <div class="bodyContainer">
+
+        
+    
+     <form action="" id="saveinfo">
+
+        <input type="text" name="name" id="" placeholder ="Enter name">
+        <input type="text" name="city" id="" placeholder ="Enter yout city">
+        <input type="submit" value="save">
+     </form>
+
+<fieldset>
+    <legend> user information</legend>
+
+    <div class="outerListContainer">
+       <ul id="list">
+       </ul>
+
+    </div>
+</fieldset>
+     </div>
+</body>
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+    import { getFirestore, collection, getDocs,addDoc,updateDoc,doc,deleteDoc} from  "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
+  import {firebase} from "/details.js"
+    // Your web app's Firebase configuration
+   
+    const app = initializeApp(firebase);
+    // Initialize Firebase
+    const db = getFirestore(app);
+
+      const mycollection = collection(db,"users");
+    const querySnapshot = await getDocs(mycollection);
+
+
+     const form =document.forms.saveinfo;
+       
+             form.addEventListener("submit",function(e){
+          e.preventDefault();
+              if(form.city.value !="" || form.name.value !="")
+              {
+                  const dataToInsert = {
+                      name: form.name.value,
+                      city: form.city.value,
+                    };
+                    if(form.children[2].value=="save")
+                    {
+                        
+                  const addedDoc = addDoc(mycollection,dataToInsert)
+                  .then(() => {
+                    console.log('Document successfully updated.');
+                  })
+                  .catch((error) => {
+                    console.error('Error updating document: ', error);
+                  }).finally(() => {
+                    window.location.reload();
+                  });
+                  
+                    }
+                    else if(form.children[2].value=="update"){
+                        const updatedDoc= updateDoc(doc(mycollection, form.user.value), dataToInsert)
+                        .then(() => {
+                            console.log('Document successfully updated.');
+                          })
+                          .catch((error) => {
+                            console.error('Error updating document: ', error);
+                          }).finally(() => {
+                            window.location.reload();
+                          });
+                        console.log(updatedDoc);
+                    }
+                    
+              }
+
+               })
+         
+         
+
+
+     querySnapshot.forEach((docx) => {
+         const actionDiv = document.getElementById("actionDialogContainer")
+
+        const thelist = document.querySelector("ul");
+        const updateBtn = document.createElement("button");
+        const deleteBtn = document.createElement("button");
+        const name = document.createElement("li");
+        const div = document.createElement("div")
+        const btnDiv = document.createElement("div")
+        const div2 = document.createElement("div")
+        const city = document.createElement("small");
+        city.classList.add("city")
+        div.classList.add("listContainer")
+        btnDiv.classList.add("actionDialogContainer")
+       
+        // doc.data() is an object with the document's data
+                 name.textContent = docx.data().name;
+                 city.textContent = docx.data().city;
+                 div2.append(name);
+                 div2.append(city);
+                 div.setAttribute("id",docx.id);
+                 updateBtn.textContent="update";
+                 deleteBtn.textContent="delete";
+                 btnDiv.append(updateBtn);
+                 btnDiv.append(deleteBtn);
+                 div.append(div2);
+                 div.append(btnDiv);
+                 thelist.append(div);
+
+      })
+            // get the listContainer 
+         const listContainer =document.querySelectorAll(".listContainer");
+         listContainer.forEach(function(data,index){
+                data.children[1].children[0].addEventListener("click",function(e){
+                    const input= document.createElement("input");
+                    input.setAttribute("type","hidden");
+                    input.setAttribute("name","user");
+                    input.setAttribute("value",data.getAttribute("id"));
+                    form.name.value =data.children[0].firstChild.textContent;
+                      form.city.value =data.children[0].lastChild.textContent;
+                       form.append(input);
+                    form.children[2].value="update"
+                    
+                  
+                })
+                data.children[1].children[1].addEventListener("click",function(e){
+                    deleteDoc(doc(mycollection,data.getAttribute("id")))
+                    .then(() => {
+                        console.log('Document successfully deleted.');
+                      })
+                      .catch((error) => {
+                        console.error('Error deleting document: ', error);
+                      }).finally(() => {
+                        window.location.reload();
+                      });;
+                })
+         })
+    
+    </script>
+  
+</html>
