@@ -1,0 +1,50 @@
+li{
+    list-style-type:none ;
+}
+  .city{
+    display: block;
+
+    margin-left: 8px;
+    text-indent: 5px;
+}
+.listContainer{
+display: flex;
+border-bottom: 1px solid gray ;
+justify-content: space-between;
+}
+.listContainer:hover {
+background:#999 ;
+
+}
+.listContainer:hover .actionDialogContainer{
+background:#999 ;
+display: flex;
+
+}
+.outerListContainer{
+width: 400px;
+}
+
+.actionDialogContainer{
+display: none;
+align-items: center;
+width: 35%;
+justify-content: space-around   ;
+
+}
+.dialogActionBtn  button{
+
+width: 70px;
+text-align: center;
+position: relative;
+}
+.bodyContainer{
+width: 50%;
+margin: auto;
+
+
+}
+form{
+margin-top: 30px;
+margin-bottom: 30px;
+}
